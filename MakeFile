@@ -1,0 +1,38 @@
+# Makefile for Block Kuzushi game
+
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99
+LDFLAGS = -lraylib -lm
+
+# Operating system detection
+ifeq ($(OS),Windows_NT)
+	# Windows-specific
+	LDFLAGS += -lopengl32 -lgdi32 -lwinmm
+else
+	# Unix-like systems
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		LDFLAGS += -lGL -ldl -lpthread -lrt -lX11
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		# macOS
+		LDFLAGS += -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+	endif
+endif
+
+# Source and output files
+SRC = main.c
+OBJ = $(SRC:.c=.o)
+EXEC = block_kuzushi
+
+# Rules
+all: $(EXEC)
+
+$(EXEC): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(EXEC) $(LDFLAGS)
+
+clean:
+	rm -f $(OBJ) $(EXEC)
+
+.PHONY: all clean
